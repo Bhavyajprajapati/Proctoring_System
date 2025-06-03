@@ -1,4 +1,100 @@
 let snapshotInterval = null;
+let audioAnalyser = null;
+let audioInterval = null;
+let audioContext = null;
+let mediaRecorder;
+let recordedChunks = [];
+
+async function recordAndSendAudio(durationSec = 3) {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    recordedChunks = [];
+
+    mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+    mediaRecorder.ondataavailable = event => {
+        if (event.data.size > 0) recordedChunks.push(event.data);
+    };
+
+    mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+        fetch('/mic-audio', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/octet-stream' },
+            body: blob
+        });
+        stream.getTracks().forEach(track => track.stop());
+    };
+
+    mediaRecorder.start();
+    setTimeout(() => mediaRecorder.stop(), durationSec * 1000);
+}
+
+async function startAudioSurveillance() {
+    try {
+        const cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) {
+            console.warn('Web Audio API not supported');
+            return;
+        }
+        audioContext = new AudioCtx();
+        const micSource = audioContext.createMediaStreamSource(cameraStream);
+        audioAnalyser = audioContext.createAnalyser();
+        audioAnalyser.fftSize = 2048;
+        micSource.connect(audioAnalyser);
+
+        const dataArray = new Uint8Array(audioAnalyser.fftSize);
+        let noiseCount = 0;
+        const MAX_NOISE_WARNINGS = 3;
+        const NOISE_THRESHOLD = 4;
+
+        audioInterval = setInterval(() => {
+            audioAnalyser.getByteTimeDomainData(dataArray);
+            let sum = 0;
+            for (let v of dataArray) sum += (v - 128) ** 2;
+            const rms = Math.sqrt(sum / dataArray.length);
+            if (rms > NOISE_THRESHOLD) {
+                noiseCount++;
+                logEvent('background-noise: rms=' + rms.toFixed(2));
+            }
+            if (noiseCount >= MAX_NOISE_WARNINGS) {
+                // logEvent('suspicious-audio-detected: count=' + noiseCount);
+                // alert("Suspicious background noise detected. Please maintain silence.");
+                recordAndSendAudio(); // <--- This line
+                noiseCount = 0;
+            }
+        }, 1000);
+
+    } catch (err) {
+        console.error('Audio surveillance error:', err);
+    }
+}
+
+function stopAudioSurveillance() {
+    if (audioInterval) {
+        clearInterval(audioInterval);
+        audioInterval = null;
+    }
+    if (audioContext) {
+        audioContext.close();
+        audioContext = null;
+    }
+    audioAnalyser = null;
+}
+
+
+function startProctoring(intervalInSec = 0.5) {
+    requestFullscreen();
+    startPeriodicSnapshots(intervalInSec);
+    startAudioSurveillance(); // Start audio monitoring
+    logEvent("Proctoring started");
+}
+
+function stopProctoring() {
+    stopPeriodicSnapshots();
+    stopAudioSurveillance(); // Stop audio monitoring
+    exitFullscreen();
+    logEvent("Proctoring stopped");
+}
 
 // Force fullscreen
 function requestFullscreen() {
@@ -24,19 +120,19 @@ document.addEventListener('fullscreenchange', () => {
     }
 });
 
-// Start Proctoring
-function startProctoring(intervalInSec = 0.5) {
-    requestFullscreen();
-    startPeriodicSnapshots(intervalInSec);
-    logEvent("Proctoring started");
-}
+// Start Proctoring 
+// function startProctoring(intervalInSec = 0.5) {
+//     requestFullscreen();
+//     startPeriodicSnapshots(intervalInSec);
+//     logEvent("Proctoring started");
+// }
 
-// Stop Proctoring
-function stopProctoring() {
-    stopPeriodicSnapshots();
-    exitFullscreen();
-    logEvent("Proctoring stopped");
-}
+// // Stop Proctoring
+// function stopProctoring() {
+//     stopPeriodicSnapshots();
+//     exitFullscreen();
+//     logEvent("Proctoring stopped");
+// }
 
 // Snapshot Capture
 function startPeriodicSnapshots(intervalInSec) {
@@ -47,7 +143,7 @@ function startPeriodicSnapshots(intervalInSec) {
             formData.append('snapshot', blob, 'snapshot.jpg');
             fetch('/snapshot', { method: 'POST', body: formData });
         });
-    }, intervalInSec * 100);
+    }, intervalInSec * 1000);
 }
 
 function stopPeriodicSnapshots() {
@@ -113,6 +209,10 @@ document.addEventListener('keydown', function (e) {
         (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())),
         (e.ctrlKey && ['U', 'S'].includes(e.key.toUpperCase())),
         (e.key === 'F12'),
+        (e.key === 'F11'),
+        (e.key === 'esc'),
+        (e.key === 'ESC'),
+        (e.key === 'Escape'),
         (e.key === 'Tab' && e.altKey),
         (e.metaKey),
     ];

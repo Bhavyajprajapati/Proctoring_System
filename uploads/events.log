@@ -1,91 +1,53 @@
-2025-05-30T06:45:17.719Z - Tab switch / window out of focus
-2025-05-30T06:45:22.663Z - Window focused
-2025-05-30T06:45:23.624Z - Tab switch / window out of focus
-2025-05-30T06:45:23.890Z - Window focused
-2025-05-30T06:45:24.488Z - Tab switch / window out of focus
-2025-05-30T07:10:04.483Z - Page unload
-2025-05-30T07:10:11.417Z - Tab switch / window out of focus
-2025-05-30T07:10:23.113Z - Window focused
-2025-05-30T07:10:27.583Z - Tab switch / window out of focus
-2025-05-30T07:10:31.750Z - Window focused
-20250530_124038 - ALERT: No face detected in snapshot_20250530_124038.jpg
-20250530_124105 - ALERT: No face detected in snapshot_20250530_124105.jpg
-20250530_124108 - INFO: Saved first image as reference.jpg
-2025-05-30T07:11:11.754Z - Tab switch / window out of focus
-2025-05-30T07:11:14.382Z - Window focused
-20250530_124135 - ALERT: No face detected in snapshot_20250530_124135.jpg
-20250530_124138 - OK: Face matched with reference in snapshot_20250530_124138.jpg
-20250530_124205 - OK: Face matched with reference in snapshot_20250530_124205.jpg
-20250530_124208 - ALERT: No face detected in snapshot_20250530_124208.jpg
-20250530_124238 - ALERT: No face detected in snapshot_20250530_124238.jpg
-20250530_124308 - ALERT: No face detected in snapshot_20250530_124308.jpg
-2025-05-30T07:13:10.627Z - Tab switch / window out of focus
-2025-05-30T07:13:13.041Z - Window focused
-20250530_124338 - ALERT: No face detected in snapshot_20250530_124338.jpg
-2025-05-30T07:13:45.321Z - Tab switch / window out of focus
-2025-05-30T07:14:05.716Z - Window focused
-20250530_124408 - ALERT: No face detected in snapshot_20250530_124408.jpg
-20250530_124438 - ALERT: No face detected in snapshot_20250530_124438.jpg
-2025-05-30T07:14:44.347Z - Tab switch / window out of focus
-2025-05-30T07:27:47.218Z - Window focused
-2025-05-30T07:27:47.219Z - Window focused
-2025-05-30T07:28:00.893Z - Tab switch / window out of focus
-2025-05-30T07:28:08.226Z - Window focused
-2025-05-30T07:28:19.866Z - Tab switch / window out of focus
-2025-05-30T07:28:31.660Z - Window focused
-2025-05-30T07:28:41.041Z - Tab switch / window out of focus
-2025-05-30T07:28:45.445Z - Window focused
-2025-05-30T07:28:58.096Z - Tab switch / window out of focus
-2025-05-30T07:29:08.376Z - Window focused
-2025-05-30T07:29:20.299Z - Tab switch / window out of focus
-2025-05-30T07:29:27.213Z - Window focused
-20250530_125959 - OK: Face matched with reference in snapshot_20250530_125959.jpg
-2025-05-30T07:30:05.664Z - Tab switch / window out of focus
-20250530_130108 - OK: Face matched with reference in snapshot_20250530_130108.jpg
-20250530_130111 - OK: Face matched with reference in snapshot_20250530_130111.jpg
-20250530_130114 - OK: Face matched with reference in snapshot_20250530_130114.jpg
-2025-05-30T07:31:17.536Z - Tab switch / window out of focus
-20250530_130117 - OK: Face matched with reference in snapshot_20250530_130117.jpg
-2025-05-30T07:31:19.904Z - Window focused
-20250530_130120 - OK: Face matched with reference in snapshot_20250530_130120.jpg
-20250530_130123 - OK: Face matched with reference in snapshot_20250530_130123.jpg
-20250530_130126 - ALERT: Phone detected in snapshot_20250530_130126.jpg
-20250530_130126 - OK: Face matched with reference in snapshot_20250530_130126.jpg
-20250530_130129 - ALERT: Phone detected in snapshot_20250530_130129.jpg
-20250530_130129 - ALERT: No face detected in snapshot_20250530_130129.jpg
-20250530_130132 - ALERT: Phone detected in snapshot_20250530_130132.jpg
-20250530_130132 - ALERT: No face detected in snapshot_20250530_130132.jpg
-20250530_130135 - OK: Face matched with reference in snapshot_20250530_130135.jpg
-20250530_130138 - ALERT: Phone detected in snapshot_20250530_130138.jpg
-20250530_130138 - OK: Face matched with reference in snapshot_20250530_130138.jpg
-20250530_130141 - OK: Face matched with reference in snapshot_20250530_130141.jpg
-20250530_130144 - OK: Face matched with reference in snapshot_20250530_130144.jpg
-20250530_130147 - OK: Face matched with reference in snapshot_20250530_130147.jpg
-20250530_130150 - OK: Face matched with reference in snapshot_20250530_130150.jpg
-20250530_130153 - OK: Face matched with reference in snapshot_20250530_130153.jpg
-20250530_130156 - OK: Face matched with reference in snapshot_20250530_130156.jpg
-20250530_130159 - ALERT: No face detected in snapshot_20250530_130159.jpg
-20250530_130202 - OK: Face matched with reference in snapshot_20250530_130202.jpg
-20250530_130205 - ALERT: No face detected in snapshot_20250530_130205.jpg
-20250530_130208 - OK: Face matched with reference in snapshot_20250530_130208.jpg
-20250530_130211 - OK: Face matched with reference in snapshot_20250530_130211.jpg
-20250530_130214 - OK: Face matched with reference in snapshot_20250530_130214.jpg
-20250530_130217 - ALERT: Face mismatch in snapshot_20250530_130217.jpg
-20250530_130220 - ALERT: No face detected in snapshot_20250530_130220.jpg
-20250530_130223 - ALERT: No face detected in snapshot_20250530_130223.jpg
-20250530_130226 - ALERT: Phone detected in snapshot_20250530_130226.jpg
-20250530_130226 - OK: Face matched with reference in snapshot_20250530_130226.jpg
-20250530_130229 - OK: Face matched with reference in snapshot_20250530_130229.jpg
-20250530_130232 - OK: Face matched with reference in snapshot_20250530_130232.jpg
-20250530_130235 - OK: Face matched with reference in snapshot_20250530_130235.jpg
-20250530_130238 - OK: Face matched with reference in snapshot_20250530_130238.jpg
-20250530_130241 - OK: Face matched with reference in snapshot_20250530_130241.jpg
-20250530_130244 - OK: Face matched with reference in snapshot_20250530_130244.jpg
-20250530_130247 - ALERT: No face detected in snapshot_20250530_130247.jpg
-20250530_130250 - OK: Face matched with reference in snapshot_20250530_130250.jpg
-20250530_130253 - ALERT: Phone detected in snapshot_20250530_130253.jpg
-20250530_130253 - OK: Face matched with reference in snapshot_20250530_130253.jpg
-20250530_130256 - ALERT: Phone detected in snapshot_20250530_130256.jpg
-20250530_130256 - OK: Face matched with reference in snapshot_20250530_130256.jpg
-20250530_130259 - OK: Face matched with reference in snapshot_20250530_130259.jpg
-2025-05-30T07:33:01.961Z - Tab switch / window out of focus
+2025-06-03T07:08:50.631Z - Page unload
+2025-06-03T07:08:52.365Z - Proctoring started
+2025-06-03T07:08:53.614Z - background-noise: rms=4.64
+2025-06-03T07:08:54.612Z - background-noise: rms=8.01
+2025-06-03T07:08:55.613Z - background-noise: rms=11.86
+2025-06-03T07:08:56.609Z - background-noise: rms=9.28
+2025-06-03T07:08:57.612Z - background-noise: rms=4.86
+20250603_123858 - ALERT: Non-silent audio detected (volume=1343.517375)
+2025-06-03T07:09:00.610Z - background-noise: rms=8.87
+20250603_123903 - ALERT: Non-silent audio detected (volume=1162.6940208333333)
+2025-06-03T07:09:07.451Z - Tab switch / window out of focus
+2025-06-03T07:09:07.961Z - background-noise: rms=6.50
+2025-06-03T07:09:08.968Z - background-noise: rms=6.63
+2025-06-03T07:09:10.963Z - background-noise: rms=7.14
+2025-06-03T07:09:11.962Z - background-noise: rms=6.60
+2025-06-03T07:09:14.966Z - background-noise: rms=21.39
+20250603_123914 - ALERT: Non-silent audio detected (volume=1089.9753682659932)
+2025-06-03T07:09:21.955Z - background-noise: rms=4.20
+2025-06-03T07:09:23.962Z - background-noise: rms=9.72
+2025-06-03T07:09:24.957Z - background-noise: rms=5.47
+20250603_123925 - ALERT: Non-silent audio detected (volume=1089.722443181818)
+2025-06-03T07:09:27.956Z - background-noise: rms=12.55
+20250603_123924 - INFO: Saved first image as reference.jpg
+20250603_123931 - ALERT: Non-silent audio detected (volume=831.7704650673401)
+2025-06-03T07:09:36.968Z - background-noise: rms=7.62
+20250603_123954 - OK: Face matched with reference in snapshot_20250603_123954.jpg
+2025-06-03T07:09:57.966Z - Window focused
+2025-06-03T07:09:59.127Z - Exited fullscreen - forcing back
+2025-06-03T07:10:00.294Z - Blocked key: Escape
+2025-06-03T07:10:00.544Z - Blocked key: Escape
+2025-06-03T07:10:00.719Z - Blocked key: Escape
+2025-06-03T07:10:01.504Z - Blocked key: F11
+2025-06-03T07:10:01.821Z - Blocked key: Escape
+2025-06-03T07:10:02.178Z - Blocked key: F11
+2025-06-03T07:10:03.986Z - Tab switch / window out of focus
+2025-06-03T07:10:05.030Z - Page unload
+2025-06-03T07:10:10.756Z - Tab switch / window out of focus
+2025-06-03T07:10:11.425Z - Window focused
+2025-06-03T07:10:12.604Z - Proctoring started
+2025-06-03T07:10:13.978Z - background-noise: rms=6.31
+2025-06-03T07:10:14.974Z - background-noise: rms=6.05
+2025-06-03T07:10:15.496Z - Exited fullscreen - forcing back
+2025-06-03T07:10:15.497Z - Tab switch / window out of focus
+2025-06-03T07:10:16.957Z - background-noise: rms=5.74
+2025-06-03T07:10:17.435Z - Window focused
+2025-06-03T07:10:18.101Z - Tab switch / window out of focus
+2025-06-03T07:10:19.956Z - background-noise: rms=4.99
+20250603_124020 - ALERT: Non-silent audio detected (volume=904.1077884615385)
+2025-06-03T07:10:21.956Z - background-noise: rms=7.93
+2025-06-03T07:10:25.957Z - background-noise: rms=8.02
+2025-06-03T07:10:27.959Z - background-noise: rms=5.24
+20250603_124030 - ALERT: Non-silent audio detected (volume=615.5677451599327)
+2025-06-03T07:10:33.957Z - background-noise: rms=4.96
