@@ -1,0 +1,6 @@
+node_modules/
+myenv/
+.env
+.venv/
+uploads/
+__pycache__/

@@ -1,0 +1,10 @@
+.searchField{
+    width:500px;
+    border: 2px solid black;
+}
+
+.searchDiv{
+    display:flex;
+    justify-content:center;
+    margin-top: 50px;
+}
