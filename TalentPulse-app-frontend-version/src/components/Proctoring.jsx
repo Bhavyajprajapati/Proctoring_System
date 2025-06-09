@@ -103,50 +103,51 @@ async function startSurveillanceStream() {
     //   video: true,
     // });
     document.getElementById("surveillanceVideo").srcObject = suspiciousStream;
-    runObjectDetectionLoop();
+    // runObjectDetectionLoop();
   } catch (err) {
     console.error("Error accessing webcam:", err);
   }
 }
 
-async function runObjectDetectionLoop() {
-  const canvas = document.createElement("canvas");
-  const video = document.getElementById("surveillanceVideo");
+// async function runObjectDetectionLoop() {
+//   // const canvas = document.createElement("canvas");
+//   const video = document.getElementById("surveillanceVideo");
 
-  setInterval(async () => {
-    if (!isProctoringActive) return; // only run if proctoring active
-    if (!video || video.readyState < 2) return;
+//   setInterval(async () => {
+//     if (!isProctoringActive) return; // only run if proctoring active
+//     if (!video || video.readyState < 2) return;
 
-    // Draw current frame
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext("2d").drawImage(video, 0, 0);
+//     // Draw current frame
+//     canvas.width = video.videoWidth;
+//     canvas.height = video.videoHeight;
+//     canvas.getContext("2d").drawImage(video, 0, 0);
 
-    // Convert to blob and send to server for YOLO detection
-    canvas.toBlob(async (blob) => {
-      const formData = new FormData();
-      formData.append("frame", blob);
+//     // Convert to blob and send to server for YOLO detection
+//     canvas.toBlob(async (blob) => {
+//       const formData = new FormData();
+//       formData.append("frame", blob);
 
-      try {
-        const res = await fetch("http://localhost:5000/suspicious-detection", {
-          method: "POST",
-          body: formData,
-        });
-        const data = await res.json();
+//       try {
+//         const res = await fetch("http://localhost:5000/suspicious-detection", {
+//           method: "POST",
+//           body: formData,
+//         });
+//         const data = await res.json();
 
-        if (data.suspicious) {
-          console.warn("Suspicious activity detected:", data.reason);
-          recordSuspiciousVideo();
-          logEvent(`Suspicious video detected: ${data.reason}`);
-        }
-      } catch (e) {
-        console.error("Error during suspicious detection:", e);
-      }
-    }, "image/jpeg");
-  }, 4000); // every 2 seconds
-}
+//         if (data.suspicious) {
+//           console.warn("Suspicious activity detected:", data.reason);
+//           recordSuspiciousVideo();
+//           logEvent(`Suspicious video detected: ${data.reason}`);
+//         }
+//       } catch (e) {
+//         console.error("Error during suspicious detection:", e);
+//       }
+//     }, "image/jpeg");
+//   }, 4000); // every 2 seconds
+// }
 
 // -------------- Snapshot functionality ----------------
+
 const takeSnapshot = async () => {
   if (!isProctoringActive) return;
   try {
@@ -176,7 +177,7 @@ const takeSnapshot = async () => {
   }
 };
 
-const startPeriodicSnapshots = (intervalInSec = 5) => {
+const startPeriodicSnapshots = (intervalInSec = 4) => {
   if (!isProctoringActive) return;
   takeSnapshot(); // immediate first snapshot
   snapshotInterval = setInterval(takeSnapshot, intervalInSec * 1000);
@@ -190,7 +191,7 @@ const stopPeriodicSnapshots = () => {
 };
 
 // -------------- Audio recording & surveillance --------------
-const recordAndSendAudio = async (durationSec = 5) => {
+const recordAndSendAudio = async (durationSec = 10) => {
   if (!isProctoringActive) return;
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -256,7 +257,7 @@ const startAudioSurveillance = async () => {
         recordAndSendAudio();
         noiseCount = 0;
       }
-    }, 10000); // every 10 seconds
+    }, 2000); // every 10 seconds
   } catch (error) {
     console.error("Audio Surveillance Error:", error);
   }
@@ -285,6 +286,7 @@ function requestFullscreen() {
 
 async function exitFullscreen() {
   if (document.exitFullscreen) await document.exitFullscreen();
+  else if (document.mozExitFullscreen) await document.mozExitFullscreen();
   else if (document.webkitExitFullscreen) await document.webkitExitFullscreen();
   else if (document.msExitFullscreen) await document.msExitFullscreen();
 }
@@ -316,7 +318,7 @@ window.onbeforeunload = () => logEvent("Page unload");
 document.addEventListener("contextmenu", (e) => e.preventDefault());
 
 // -------------- Main exported proctoring controls --------------
-export const startProctoring = async (snapshotIntervalSec = 5) => {
+export const startProctoring = async (snapshotIntervalSec = 4) => {
   if (isProctoringActive) return;
   isProctoringActive = true;
   logEvent("Proctoring started");

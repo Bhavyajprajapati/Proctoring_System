@@ -157,6 +157,10 @@ def save_snapshot():
             label.lower() in ["cell phone", "phone"] for label in detected_labels
         )
 
+        labels = [r for r in results[0].names.values()]
+        detected = results[0].boxes.cls.tolist()
+        suspicious_labels = [labels[int(cls)] for cls in detected]
+
         with open(log_path, "a") as log:
             if phone_detected:
                 log.write(f"{timestamp} - ALERT: Phone detected in {filename}\n")
@@ -195,9 +199,7 @@ def save_snapshot():
                 return "Reference face missing", 500
 
             # Compare current face to reference face
-            is_match = face_recognition.compare_faces(ref_encodings, face_encodings[0])[
-                0
-            ]
+            is_match = face_recognition.compare_faces(ref_encodings, face_encodings[0])[0]
 
             if is_match:
                 log.write(
@@ -207,6 +209,12 @@ def save_snapshot():
                 log.write(f"{timestamp} - ALERT: Face mismatch in {filename}\n")
                 return jsonify({"suspicious": True, "reason": "Face Mismatch"})
 
+        
+            for item in suspicious_labels:
+                if item.lower() in ["remote", "tv", "book", "handbag"]:
+                    log.write(f"{timestamp} - ALERT: {item} detected in {filename}\n")
+                    return jsonify({"suspicious": True, "reason": item})
+                
     except Exception as e:
         with open(log_path, "a") as log:
             log.write(
@@ -217,24 +225,24 @@ def save_snapshot():
     return "Snapshot processed", 200
 
 
-def suspicious_detection():
-    file = request.files.get("frame")
-    if not file:
-        return jsonify({"suspicious": False})
+# def suspicious_detection():
+    # file = request.files.get("snapshot")
+    # if not file:
+    #     return jsonify({"suspicious": False})
 
-    image_path = os.path.join(UPLOAD_FOLDER, "yolo_check.jpg")
-    file.save(image_path)
-    results = yolo_model(image_path)
+    # image_path = os.path.join(UPLOAD_FOLDER, "yolo_check.jpg")
+    # file.save(image_path)
+    # results = yolo_model(image_path)
 
-    labels = [r for r in results[0].names.values()]
-    detected = results[0].boxes.cls.tolist()
-    suspicious_labels = [labels[int(cls)] for cls in detected]
+    # labels = [r for r in results[0].names.values()]
+    # detected = results[0].boxes.cls.tolist()
+    # suspicious_labels = [labels[int(cls)] for cls in detected]
 
-    for item in suspicious_labels:
-        if item.lower() in ["cell phone", "remote", "tv", "book", "handbag", "person"]:
-            return jsonify({"suspicious": True, "reason": item})
+    # for item in suspicious_labels:
+    #     if item.lower() in ["cell phone", "remote", "tv", "book", "handbag", "person"]:
+    #         return jsonify({"suspicious": True, "reason": item})
 
-    return jsonify({"suspicious": False})
+    # return jsonify({"suspicious": False})
 
 
 def save_evidence():

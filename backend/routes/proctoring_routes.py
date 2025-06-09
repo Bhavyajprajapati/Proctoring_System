@@ -4,7 +4,6 @@ from controller.proctoring import (
     check_blink,
     mic_audio,
     log_event,
-    suspicious_detection,
     save_evidence,
 )
 
@@ -31,9 +30,9 @@ def check_blink_route():
     return check_blink()
 
 
-@proctoring_routes.route("/suspicious-detection", methods=["POST"])
-def suspicious_detection_route():
-    return suspicious_detection()
+# @proctoring_routes.route("/suspicious-detection", methods=["POST"])
+# def suspicious_detection_route():
+#     return suspicious_detection()
 
 
 @proctoring_routes.route("/recorded-evidence", methods=["POST"])
