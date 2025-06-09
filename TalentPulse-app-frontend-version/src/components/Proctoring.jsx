@@ -67,7 +67,7 @@ function disableRestrictions() {
 }
 
 // -------------- Suspicious video recording ----------------
-function recordSuspiciousVideo(duration = 7) {
+function recordSuspiciousVideo(duration = 10) {
   if (!suspiciousStream) return;
 
   suspiciousChunks = [];
@@ -99,9 +99,9 @@ function recordSuspiciousVideo(duration = 7) {
 // -------------- Start video stream and object detection --------------
 async function startSurveillanceStream() {
   try {
-    suspiciousStream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-    });
+    // suspiciousStream = await navigator.mediaDevices.getUserMedia({
+    //   video: true,
+    // });
     document.getElementById("surveillanceVideo").srcObject = suspiciousStream;
     runObjectDetectionLoop();
   } catch (err) {
@@ -143,7 +143,7 @@ async function runObjectDetectionLoop() {
         console.error("Error during suspicious detection:", e);
       }
     }, "image/jpeg");
-  }, 2000); // every 2 seconds
+  }, 4000); // every 2 seconds
 }
 
 // -------------- Snapshot functionality ----------------
@@ -158,10 +158,17 @@ const takeSnapshot = async () => {
     const formData = new FormData();
     formData.append("snapshot", blob);
 
-    await fetch("http://localhost:5000/snapshot", {
+    const res = await fetch("http://localhost:5000/snapshot", {
       method: "POST",
       body: formData,
     });
+    const data = await res.json();
+
+    if (data.suspicious) {
+      console.warn("Suspicious activity detected:", data.reason);
+      recordSuspiciousVideo();
+      logEvent(`Suspicious video detected: ${data.reason}`);
+    }
 
     videoTrack.stop();
   } catch (err) {
@@ -183,7 +190,7 @@ const stopPeriodicSnapshots = () => {
 };
 
 // -------------- Audio recording & surveillance --------------
-const recordAndSendAudio = async (durationSec = 3) => {
+const recordAndSendAudio = async (durationSec = 5) => {
   if (!isProctoringActive) return;
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -313,11 +320,27 @@ export const startProctoring = async (snapshotIntervalSec = 5) => {
   if (isProctoringActive) return;
   isProctoringActive = true;
   logEvent("Proctoring started");
+
+  try {
+    suspiciousStream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true
+    });
+  } catch (err) {
+    console.error("User denied AV permissions", err);
+    alert("Audio and video permissions are required to start the test.");
+    isProctoringActive = false;
+    return;
+  }
+
   requestFullscreen();
 
   await startSurveillanceStream();
+  
   startPeriodicSnapshots(snapshotIntervalSec);
+
   await startAudioSurveillance();
+
   enableRestrictions();
 };
 

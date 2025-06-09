@@ -160,6 +160,7 @@ def save_snapshot():
         with open(log_path, "a") as log:
             if phone_detected:
                 log.write(f"{timestamp} - ALERT: Phone detected in {filename}\n")
+                return jsonify({"suspicious": True, "reason": "Phone Detected"})
 
         # Face recognition steps
         image = face_recognition.load_image_file(path)
@@ -168,13 +169,15 @@ def save_snapshot():
         with open(log_path, "a") as log:
             if len(face_encodings) == 0:
                 log.write(f"{timestamp} - ALERT: No face detected in {filename}\n")
-                return "No face detected", 200
+                # return "No face detected", 200
+                return jsonify({"suspicious": True, "reason": "No face detected"})
 
             if len(face_encodings) > 1:
                 log.write(
                     f"{timestamp} - ALERT: Multiple faces detected in {filename}\n"
                 )
-                return "Multiple faces detected", 200
+                # return "Multiple faces detected", 200
+                return jsonify({"suspicious": True, "reason": "Multiple faces detected"})
 
             # If no reference face, save first snapshot as reference
             if not os.path.exists(reference_path):
@@ -202,6 +205,7 @@ def save_snapshot():
                 )
             else:
                 log.write(f"{timestamp} - ALERT: Face mismatch in {filename}\n")
+                return jsonify({"suspicious": True, "reason": "Face Mismatch"})
 
     except Exception as e:
         with open(log_path, "a") as log:
