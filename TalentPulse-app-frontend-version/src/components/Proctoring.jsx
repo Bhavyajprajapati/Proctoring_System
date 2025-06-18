@@ -99,52 +99,12 @@ function recordSuspiciousVideo(duration = 10) {
 // -------------- Start video stream and object detection --------------
 async function startSurveillanceStream() {
   try {
-    // suspiciousStream = await navigator.mediaDevices.getUserMedia({
-    //   video: true,
-    // });
     document.getElementById("surveillanceVideo").srcObject = suspiciousStream;
-    // runObjectDetectionLoop();
+
   } catch (err) {
     console.error("Error accessing webcam:", err);
   }
 }
-
-// async function runObjectDetectionLoop() {
-//   // const canvas = document.createElement("canvas");
-//   const video = document.getElementById("surveillanceVideo");
-
-//   setInterval(async () => {
-//     if (!isProctoringActive) return; // only run if proctoring active
-//     if (!video || video.readyState < 2) return;
-
-//     // Draw current frame
-//     canvas.width = video.videoWidth;
-//     canvas.height = video.videoHeight;
-//     canvas.getContext("2d").drawImage(video, 0, 0);
-
-//     // Convert to blob and send to server for YOLO detection
-//     canvas.toBlob(async (blob) => {
-//       const formData = new FormData();
-//       formData.append("frame", blob);
-
-//       try {
-//         const res = await fetch("http://localhost:5000/suspicious-detection", {
-//           method: "POST",
-//           body: formData,
-//         });
-//         const data = await res.json();
-
-//         if (data.suspicious) {
-//           console.warn("Suspicious activity detected:", data.reason);
-//           recordSuspiciousVideo();
-//           logEvent(`Suspicious video detected: ${data.reason}`);
-//         }
-//       } catch (e) {
-//         console.error("Error during suspicious detection:", e);
-//       }
-//     }, "image/jpeg");
-//   }, 4000); // every 2 seconds
-// }
 
 // -------------- Snapshot functionality ----------------
 
@@ -361,4 +321,33 @@ export const stopProctoring = async () => {
   await stopAudioSurveillance();
   await exitFullscreen();
   disableRestrictions();
+};
+
+export const sendReferencePhoto = async (onSuccess, onFail) => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    const videoTrack = stream.getVideoTracks()[0];
+    const imageCapture = new ImageCapture(videoTrack);
+
+    const blob = await imageCapture.takePhoto();
+    const formData = new FormData();
+    formData.append("snapshot", blob);
+
+    const res = await fetch("http://localhost:5000/referenece_photo", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    videoTrack.stop();
+
+    if (data.status === "success") {
+      onSuccess(blob); // ✅ pass blob
+    } else {
+      onFail();
+    }
+  } catch (error) {
+    console.error("Error sending reference photo:", error);
+    onFail();
+  }
 };

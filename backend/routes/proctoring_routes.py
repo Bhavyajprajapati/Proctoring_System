@@ -5,6 +5,7 @@ from controller.proctoring import (
     mic_audio,
     log_event,
     save_evidence,
+    save_reference_photo,
 )
 
 proctoring_routes = Blueprint("main", __name__)
@@ -30,9 +31,9 @@ def check_blink_route():
     return check_blink()
 
 
-# @proctoring_routes.route("/suspicious-detection", methods=["POST"])
-# def suspicious_detection_route():
-#     return suspicious_detection()
+@proctoring_routes.route("/referenece_photo", methods=["POST"])
+def save_reference_photo_route():
+    return save_reference_photo()
 
 
 @proctoring_routes.route("/recorded-evidence", methods=["POST"])

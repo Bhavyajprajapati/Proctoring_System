@@ -181,7 +181,9 @@ def save_snapshot():
                     f"{timestamp} - ALERT: Multiple faces detected in {filename}\n"
                 )
                 # return "Multiple faces detected", 200
-                return jsonify({"suspicious": True, "reason": "Multiple faces detected"})
+                return jsonify(
+                    {"suspicious": True, "reason": "Multiple faces detected"}
+                )
 
             # If no reference face, save first snapshot as reference
             if not os.path.exists(reference_path):
@@ -199,7 +201,9 @@ def save_snapshot():
                 return "Reference face missing", 500
 
             # Compare current face to reference face
-            is_match = face_recognition.compare_faces(ref_encodings, face_encodings[0])[0]
+            is_match = face_recognition.compare_faces(ref_encodings, face_encodings[0])[
+                0
+            ]
 
             if is_match:
                 log.write(
@@ -209,12 +213,11 @@ def save_snapshot():
                 log.write(f"{timestamp} - ALERT: Face mismatch in {filename}\n")
                 return jsonify({"suspicious": True, "reason": "Face Mismatch"})
 
-        
             for item in suspicious_labels:
                 if item.lower() in ["remote", "tv", "book", "handbag"]:
                     log.write(f"{timestamp} - ALERT: {item} detected in {filename}\n")
                     return jsonify({"suspicious": True, "reason": item})
-                
+
     except Exception as e:
         with open(log_path, "a") as log:
             log.write(
@@ -225,24 +228,20 @@ def save_snapshot():
     return "Snapshot processed", 200
 
 
-# def suspicious_detection():
-    # file = request.files.get("snapshot")
-    # if not file:
-    #     return jsonify({"suspicious": False})
+def save_reference_photo():
+    snapshot = request.files.get("snapshot")
+    if not snapshot:
+        return "No snapshot provided", 400
 
-    # image_path = os.path.join(UPLOAD_FOLDER, "yolo_check.jpg")
-    # file.save(image_path)
-    # results = yolo_model(image_path)
+    reference_path = os.path.join(UPLOAD_FOLDER, "reference.jpg")
+    snapshot.save(reference_path)
 
-    # labels = [r for r in results[0].names.values()]
-    # detected = results[0].boxes.cls.tolist()
-    # suspicious_labels = [labels[int(cls)] for cls in detected]
-
-    # for item in suspicious_labels:
-    #     if item.lower() in ["cell phone", "remote", "tv", "book", "handbag", "person"]:
-    #         return jsonify({"suspicious": True, "reason": item})
-
-    # return jsonify({"suspicious": False})
+    return (
+        jsonify(
+            {"status": "success", "message": "Reference Photo is saved successfully"}
+        ),
+        200,
+    )
 
 
 def save_evidence():
@@ -251,7 +250,7 @@ def save_evidence():
         return "No file received", 400
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    video_path = os.path.join(UPLOAD_FOLDER, f"evidence_{timestamp}.webm")
+    video_path = os.path.join(UPLOAD_FOLDER, f"evidence_{timestamp}.mp4")
     file.save(video_path)
 
     with open(os.path.join(UPLOAD_FOLDER, "events.log"), "a") as log:
