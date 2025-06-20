@@ -100,7 +100,6 @@ function recordSuspiciousVideo(duration = 10) {
 async function startSurveillanceStream() {
   try {
     document.getElementById("surveillanceVideo").srcObject = suspiciousStream;
-
   } catch (err) {
     console.error("Error accessing webcam:", err);
   }
@@ -108,11 +107,39 @@ async function startSurveillanceStream() {
 
 // -------------- Snapshot functionality ----------------
 
+// const takeSnapshot = async () => {
+//   if (!isProctoringActive) return;
+//   try {
+//     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+//     const videoTrack = stream.getVideoTracks()[0];
+//     const imageCapture = new ImageCapture(videoTrack);
+//     const blob = await imageCapture.takePhoto();
+
+//     const formData = new FormData();
+//     formData.append("snapshot", blob);
+
+//     const res = await fetch("http://localhost:5000/snapshot", {
+//       method: "POST",
+//       body: formData,
+//     });
+//     const data = await res.json();
+
+//     if (data.suspicious) {
+//       console.warn("Suspicious activity detected:", data.reason);
+//       recordSuspiciousVideo();
+//       logEvent(`Suspicious video detected: ${data.reason}`);
+//     }
+
+//     videoTrack.stop();
+//   } catch (err) {
+//     console.error("Snapshot error:", err);
+//   }
+// };
 const takeSnapshot = async () => {
-  if (!isProctoringActive) return;
+  if (!isProctoringActive || !suspiciousStream) return;
+
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    const videoTrack = stream.getVideoTracks()[0];
+    const videoTrack = suspiciousStream.getVideoTracks()[0];
     const imageCapture = new ImageCapture(videoTrack);
     const blob = await imageCapture.takePhoto();
 
@@ -127,11 +154,9 @@ const takeSnapshot = async () => {
 
     if (data.suspicious) {
       console.warn("Suspicious activity detected:", data.reason);
-      recordSuspiciousVideo();
+      recordSuspiciousAV(10);
       logEvent(`Suspicious video detected: ${data.reason}`);
     }
-
-    videoTrack.stop();
   } catch (err) {
     console.error("Snapshot error:", err);
   }
@@ -207,16 +232,15 @@ const startAudioSurveillance = async () => {
       const rms = Math.sqrt(sum / dataArray.length);
 
       if (rms > NOISE_THRESHOLD) {
-        noiseCount++;
-        console.log("Noise RMS:", rms.toFixed(2));
-        logEvent(`background-noise detected (RMS=${rms.toFixed(2)})`);
-      }
-
-      if (noiseCount >= MAX_NOISE_WARNINGS) {
+        recordSuspiciousAV(10);
         logEvent("Suspicious audio detected, recording audio.");
-        recordAndSendAudio();
-        noiseCount = 0;
       }
+      
+      // if (noiseCount >= MAX_NOISE_WARNINGS) {
+      //   noiseCount++;
+      //   logEvent(`background-noise detected (RMS=${rms.toFixed(2)})`);
+      //   noiseCount = 0;
+      // }
     }, 2000); // every 10 seconds
   } catch (error) {
     console.error("Audio Surveillance Error:", error);
@@ -270,8 +294,23 @@ document.addEventListener("fullscreenchange", () => {
 });
 
 // Tab focus/blur logging
-window.onblur = () => logEvent("Tab/window lost focus");
-window.onfocus = () => logEvent("Tab/window gained focus");
+window.onblur = () => {
+  logEvent("Tab/window lost focus");
+  if (isProctoringActive && !document.fullscreenElement) {
+    // Ask user to go fullscreen again
+    // alert("You left the fullscreen. Please return to fullscreen mode.");
+    requestFullscreen();
+  }
+};
+window.onfocus = () => {
+  logEvent("Tab/window gained focus");
+
+  if (isProctoringActive && !document.fullscreenElement) {
+    // Ask user to go fullscreen again
+    // alert("You left the fullscreen. Please return to fullscreen mode.");
+    requestFullscreen();
+  }
+};
 window.onbeforeunload = () => logEvent("Page unload");
 
 // Optional: prevent right-click
@@ -286,7 +325,7 @@ export const startProctoring = async (snapshotIntervalSec = 4) => {
   try {
     suspiciousStream = await navigator.mediaDevices.getUserMedia({
       video: true,
-      audio: true
+      audio: true,
     });
   } catch (err) {
     console.error("User denied AV permissions", err);
@@ -298,7 +337,7 @@ export const startProctoring = async (snapshotIntervalSec = 4) => {
   requestFullscreen();
 
   await startSurveillanceStream();
-  
+
   startPeriodicSnapshots(snapshotIntervalSec);
 
   await startAudioSurveillance();
@@ -351,3 +390,38 @@ export const sendReferencePhoto = async (onSuccess, onFail) => {
     onFail();
   }
 };
+
+let recordingInProgress = false;
+
+function recordSuspiciousAV(duration = 10) {
+  if (!suspiciousStream || recordingInProgress) return;
+
+  recordingInProgress = true;
+  const chunks = [];
+
+  const recorder = new MediaRecorder(suspiciousStream, {
+    mimeType: "video/webm",
+  });
+
+  recorder.ondataavailable = (e) => {
+    if (e.data.size > 0) chunks.push(e.data);
+  };
+
+  recorder.onstop = () => {
+    const blob = new Blob(chunks, { type: "video/webm" });
+    const formData = new FormData();
+    formData.append("evidence", blob);
+
+    fetch("http://localhost:5000/recorded-evidence", {
+      method: "POST",
+      body: formData,
+    }).catch(console.error);
+
+    recordingInProgress = false;
+  };
+
+  recorder.start();
+  setTimeout(() => {
+    if (recorder.state === "recording") recorder.stop();
+  }, duration * 1000);
+}

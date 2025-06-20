@@ -244,18 +244,62 @@ def save_reference_photo():
     )
 
 
+# def save_evidence():
+#     file = request.files.get("evidence")
+#     if not file:
+#         return "No file received", 400
+
+#     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+#     video_path = os.path.join(UPLOAD_FOLDER, f"evidence_{timestamp}.webm")
+#     file.save(video_path)
+
+#     with open(os.path.join(UPLOAD_FOLDER, "events.log"), "a") as log:
+#         log.write(
+#             f"{timestamp} - ALERT: Suspicious activity video saved: {video_path}\n"
+#         )
+
+#     return "Video evidence saved", 200
+
+
 def save_evidence():
     file = request.files.get("evidence")
     if not file:
         return "No file received", 400
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    video_path = os.path.join(UPLOAD_FOLDER, f"evidence_{timestamp}.mp4")
+    video_path = os.path.join(UPLOAD_FOLDER, f"evidence_{timestamp}.webm")
     file.save(video_path)
 
-    with open(os.path.join(UPLOAD_FOLDER, "events.log"), "a") as log:
-        log.write(
-            f"{timestamp} - ALERT: Suspicious activity video saved: {video_path}\n"
+    # Get video duration using ffprobe
+    try:
+        result = subprocess.run(
+            [
+                "ffprobe",
+                "-v",
+                "quiet",
+                "-print_format",
+                "json",
+                "-show_format",
+                video_path,
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
         )
+        import json
 
-    return "Video evidence saved", 200
+        info = json.loads(result.stdout)
+        duration_str = info["format"].get("duration", "0.0")
+        duration = float(duration_str)
+
+        duration_formatted = str(datetime.timedelta(seconds=int(duration)))
+
+        log_message = f"{timestamp} - ALERT: Suspicious activity video saved: {video_path} (Duration: {duration_formatted})\n"
+    except Exception as e:
+        duration_formatted = "unknown"
+        log_message = f"{timestamp} - ALERT: Video saved: {video_path}, but duration could not be determined. Error: {e}\n"
+
+    with open(os.path.join(UPLOAD_FOLDER, "events.log"), "a") as log:
+        log.write(log_message)
+
+    return f"Video evidence saved (Duration: {duration_formatted})", 200
