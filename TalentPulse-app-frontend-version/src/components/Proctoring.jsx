@@ -370,9 +370,9 @@ export const sendReferencePhoto = async (onSuccess, onFail) => {
 
     const blob = await imageCapture.takePhoto();
     const formData = new FormData();
-    formData.append("snapshot", blob);
+    formData.append("snapshot", blob, "reference.jpg");
 
-    const res = await fetch("http://localhost:5000/referenece_photo", {
+    const res = await fetch("http://localhost:5000/save-id-photo", {
       method: "POST",
       body: formData,
     });
@@ -381,7 +381,7 @@ export const sendReferencePhoto = async (onSuccess, onFail) => {
     videoTrack.stop();
 
     if (data.status === "success") {
-      onSuccess(blob); // ✅ pass blob
+      onSuccess(blob);
     } else {
       onFail();
     }

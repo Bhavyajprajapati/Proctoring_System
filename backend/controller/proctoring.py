@@ -185,12 +185,12 @@ def save_snapshot():
                     {"suspicious": True, "reason": "Multiple faces detected"}
                 )
 
-            # If no reference face, save first snapshot as reference
-            if not os.path.exists(reference_path):
-                snapshot.seek(0)
-                snapshot.save(reference_path)
-                log.write(f"{timestamp} - INFO: Saved first image as reference.jpg\n")
-                return "Reference face saved", 200
+            # # If no reference face, save first snapshot as reference
+            # if not os.path.exists(reference_path):
+            #     snapshot.seek(0)
+            #     snapshot.save(reference_path)
+            #     log.write(f"{timestamp} - INFO: Saved first image as reference.jpg\n")
+            #     return "Reference face saved", 200
 
             # Load and encode reference face
             ref_image = face_recognition.load_image_file(reference_path)
@@ -228,20 +228,21 @@ def save_snapshot():
     return "Snapshot processed", 200
 
 
-def save_reference_photo():
-    snapshot = request.files.get("snapshot")
-    if not snapshot:
-        return "No snapshot provided", 400
+def save_id_photo():
+    file = request.files.get("snapshot") or request.files.get("file")
+    if not file:
+        return jsonify({"status": "error", "message": "No image file provided"}), 400
 
-    reference_path = os.path.join(UPLOAD_FOLDER, "reference.jpg")
-    snapshot.save(reference_path)
+    if not file.content_type.startswith("image/"):
+        return jsonify({"status": "error", "message": "Invalid image format"}), 400
 
-    return (
-        jsonify(
-            {"status": "success", "message": "Reference Photo is saved successfully"}
-        ),
-        200,
-    )
+    try:
+        path = os.path.join(UPLOAD_FOLDER, "reference.jpg")
+        file.save(path)
+        return jsonify({"status": "success", "message": "ID photo saved"}), 200
+    except Exception as e:
+        print("Error saving image:", e)
+        return jsonify({"status": "error", "message": "Failed to save image"}), 500
 
 
 # def save_evidence():
