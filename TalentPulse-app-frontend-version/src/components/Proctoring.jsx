@@ -325,7 +325,7 @@ export const startProctoring = async (snapshotIntervalSec = 4) => {
   try {
     suspiciousStream = await navigator.mediaDevices.getUserMedia({
       video: true,
-      audio: true,
+      audio: true
     });
   } catch (err) {
     console.error("User denied AV permissions", err);
@@ -393,20 +393,36 @@ export const sendReferencePhoto = async (onSuccess, onFail) => {
 
 let recordingInProgress = false;
 
-function recordSuspiciousAV(duration = 10) {
+async function recordSuspiciousAV(duration = 10) {
   if (!suspiciousStream || recordingInProgress) return;
 
   recordingInProgress = true;
+
+  //video recording
   const chunks = [];
 
   const recorder = new MediaRecorder(suspiciousStream, {
     mimeType: "video/webm",
   });
 
+
+  //audio recording
+  const audioStream = new MediaStream(suspiciousStream.getAudioTracks());
+  const audioChunks = [];
+  const audioRecorder = new MediaRecorder(audioStream, {mimeType: "audio/webm",});
+
+  
+  //collecting the video
   recorder.ondataavailable = (e) => {
     if (e.data.size > 0) chunks.push(e.data);
   };
 
+  //collecting the audio
+  audioRecorder.ondataavailable = (e) => {
+    if (e.data.size > 0) audioChunks.push(e.data);
+  };
+
+  // api call to make video evidence
   recorder.onstop = () => {
     const blob = new Blob(chunks, { type: "video/webm" });
     const formData = new FormData();
@@ -420,8 +436,23 @@ function recordSuspiciousAV(duration = 10) {
     recordingInProgress = false;
   };
 
-  recorder.start();
+  // api call to analyze audio file recorded
+  audioRecorder.onstop = () => {
+    const blob = new Blob(audioChunks, { type: "audio/webm"});
+    fetch("http://localhost:5000/mic-audio", {
+        method: "POST",
+        headers: { "Content-Type": "application/octet-stream" },
+        body: blob,
+    }).catch(console.error);
+
+    recordingInProgress = false;
+  }
+
+  await Promise.all([recorder.start(),audioRecorder.start()])
+  // recorder.start();
+  // audioRecorder.start();
   setTimeout(() => {
     if (recorder.state === "recording") recorder.stop();
+    if (audioRecorder.state === "recording") audioRecorder.stop();
   }, duration * 1000);
 }
