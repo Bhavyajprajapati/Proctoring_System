@@ -31,7 +31,7 @@ def check_blink_route():
     return check_blink()
 
 
-@proctoring_routes.route("//save-id-photo", methods=["POST"])
+@proctoring_routes.route("/save-id-photo", methods=["POST"])
 def save_id_photo_route():
     return save_id_photo()
 
